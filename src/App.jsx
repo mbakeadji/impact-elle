@@ -9,11 +9,13 @@ import FormReg from './FormReg';
 export default function App() {
   const [activePage, setActivePage] = useState('home');
   const [membersList, setMembersList] = useState([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // État pour ouvrir/fermer le menu sur mobile
 
-  // Fonction de navigation avec remontée automatique en haut de page
+  // Fonction de navigation avec remontée automatique et fermeture du menu mobile
   const navigateTo = (page, e) => {
     if (e) e.preventDefault();
     setActivePage(page);
+    setIsMobileMenuOpen(false); // Ferme le menu mobile après un clic
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -56,7 +58,7 @@ export default function App() {
             </div>
           </a>
 
-          {/* Menu Nav Dynamique */}
+          {/* Menu Nav Desktop (caché sur mobile) */}
           <nav className="hidden md:flex items-center space-x-8 font-semibold text-sm text-stone-600">
             <a 
               href="#home" 
@@ -95,18 +97,83 @@ export default function App() {
             </a>
           </nav>
 
-          {/* Actions */}
+          {/* Actions & Bouton Burger Mobile */}
           <div className="flex items-center space-x-4">
             <a
               href="#formreg"
               onClick={(e) => navigateTo('formreg', e)}
-              className="bg-gradient-to-r from-stone-900 to-emerald-800 hover:from-stone-800 hover:to-emerald-700 text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer uppercase tracking-wider"
+              className="hidden sm:inline-block bg-gradient-to-r from-stone-900 to-emerald-800 hover:from-stone-800 hover:to-emerald-700 text-white text-xs font-bold px-6 py-2.5 rounded-full transition-all duration-300 shadow-md hover:shadow-lg cursor-pointer uppercase tracking-wider"
             >
               Rejoindre impact'Elle
             </a>
+
+            {/* Bouton Menu Burger (visible uniquement sur mobile) */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden text-stone-700 hover:text-emerald-800 focus:outline-none p-2"
+              aria-label="Ouvrir le menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
 
         </div>
+
+        {/* Menu Déroulant Mobile */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white border-b border-stone-200 px-4 pt-2 pb-6 space-y-3 shadow-lg">
+            <a 
+              href="#home" 
+              onClick={(e) => navigateTo('home', e)}
+              className={`block px-3 py-2 rounded-md text-base font-semibold ${activePage === 'home' ? 'bg-emerald-50 text-emerald-800' : 'text-stone-600 hover:bg-stone-50'}`}
+            >
+              Accueil
+            </a>
+            <a 
+              href="#qui-sommes-nous" 
+              onClick={(e) => navigateTo('about', e)}
+              className={`block px-3 py-2 rounded-md text-base font-semibold ${activePage === 'about' ? 'bg-emerald-50 text-emerald-800' : 'text-stone-600 hover:bg-stone-50'}`}
+            >
+              Qui sommes-nous
+            </a>
+            <a 
+              href="#activites" 
+              onClick={(e) => navigateTo('activities', e)}
+              className={`block px-3 py-2 rounded-md text-base font-semibold ${activePage === 'activities' ? 'bg-emerald-50 text-emerald-800' : 'text-stone-600 hover:bg-stone-50'}`}
+            >
+              Nos activités
+            </a>
+            <a 
+              href="#galerie" 
+              onClick={(e) => navigateTo('gallery', e)}
+              className={`block px-3 py-2 rounded-md text-base font-semibold ${activePage === 'gallery' ? 'bg-emerald-50 text-emerald-800' : 'text-stone-600 hover:bg-stone-50'}`}
+            >
+              Galerie
+            </a>
+            <a 
+              href="#contact" 
+              onClick={(e) => navigateTo('contact', e)}
+              className={`block px-3 py-2 rounded-md text-base font-semibold ${activePage === 'contact' ? 'bg-emerald-50 text-emerald-800' : 'text-stone-600 hover:bg-stone-50'}`}
+            >
+              Contact
+            </a>
+            <div className="pt-2">
+              <a
+                href="#formreg"
+                onClick={(e) => navigateTo('formreg', e)}
+                className="block text-center bg-gradient-to-r from-stone-900 to-emerald-800 text-white text-xs font-bold px-6 py-3 rounded-xl uppercase tracking-wider shadow-md"
+              >
+                Rejoindre impact'Elle
+              </a>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* CONTENU PRINCIPAL */}
