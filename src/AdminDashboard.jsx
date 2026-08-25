@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 
 export default function AdminDashboard({ membersList = [] }) {
-  // État de l'authentification (false par défaut)
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState(false);
-
   // État pour naviguer entre les sous-onglets de l'admin
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -25,72 +19,6 @@ export default function AdminDashboard({ membersList = [] }) {
     { id: 1, fullName: 'Aminata Ndiaye', phone: '+221 77 123 45 67', activity: 'Agro-business', status: 'Confirmé' }
   ]);
 
-  // Fonction de gestion de la connexion avec les nouveaux identifiants
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (username === 'impactelle' && password === '25082026') {
-      setIsAuthenticated(true);
-      setLoginError(false);
-    } else {
-      setLoginError(true);
-    }
-  };
-
-  // Si l'utilisatrice n'est pas connectée, on affiche l'écran de Login
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center bg-stone-100 px-4">
-        <div className="max-w-md w-full bg-white rounded-3xl shadow-lg border border-stone-200 p-8">
-          <div className="text-center mb-8">
-            <div className="w-12 h-12 bg-emerald-800 text-white flex items-center justify-center font-black text-xl rounded-2xl mx-auto mb-3 shadow-md">
-              I
-            </div>
-            <h1 className="text-2xl font-black text-stone-900">Administration</h1>
-            <p className="text-xs text-stone-500 uppercase tracking-wider font-bold mt-1">Impact'Elle - Connexion sécurisée</p>
-          </div>
-
-          {loginError && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl text-center">
-              Identifiant ou mot de passe incorrect.
-            </div>
-          )}
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Identifiant</label>
-              <input 
-                type="text" 
-                value={username} 
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Entrez votre identifiant"
-                className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-800 text-sm"
-                required 
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Mot de passe</label>
-              <input 
-                type="password" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
-                className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-800 text-sm"
-                required 
-              />
-            </div>
-            <button 
-              type="submit"
-              className="w-full bg-gradient-to-r from-stone-900 to-emerald-800 text-white font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-md hover:from-stone-800 hover:to-emerald-700 transition-all cursor-pointer mt-2"
-            >
-              Se connecter
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
-  // Si connectée, on affiche le tableau de bord unifié complet
   return (
     <div className="min-h-screen bg-stone-100 flex flex-col md:flex-row">
       
@@ -141,16 +69,8 @@ export default function AdminDashboard({ membersList = [] }) {
           </nav>
         </div>
 
-        <div className="pt-6 border-t border-stone-800 flex flex-col gap-3">
-          <button 
-            onClick={() => setIsAuthenticated(false)}
-            className="w-full text-left px-4 py-2 rounded-xl text-xs text-red-400 hover:bg-stone-800 font-bold transition-colors cursor-pointer"
-          >
-            🔓 Se déconnecter
-          </button>
-          <div className="text-xs text-stone-500 text-center">
-            Impact'Elle &copy; 2026
-          </div>
+        <div className="pt-6 border-t border-stone-800 text-xs text-stone-500 text-center">
+          Impact'Elle Dashboard &copy; 2026
         </div>
       </aside>
 
@@ -182,8 +102,8 @@ export default function AdminDashboard({ membersList = [] }) {
             </div>
 
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-stone-200 mt-6">
-              <h2 className="text-lg font-bold text-stone-800 mb-2">Bienvenue, Administrateur</h2>
-              <p className="text-sm text-stone-600">Ce tableau de bord centralise l'ensemble des interactions de la plateforme Impact'Elle. Utilisez le menu latéral pour inspecter les adhésions en cours, les formulaires de formation et les messages de contact.</p>
+              <h2 className="text-lg font-bold text-stone-800 mb-4">Activité récente</h2>
+              <p className="text-sm text-stone-600">Bienvenue dans votre espace d'administration unifié. Utilisez le menu latéral pour naviguer entre la gestion des adhésions, des formulaires et des activités.</p>
             </div>
           </div>
         )}
@@ -193,7 +113,7 @@ export default function AdminDashboard({ membersList = [] }) {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h1 className="text-2xl font-black text-stone-900">Gestion des Activités</h1>
-              <button onClick={() => alert("Fonctionnalité d'ajout d'activité")} className="bg-emerald-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl uppercase tracking-wider hover:bg-emerald-700 cursor-pointer">
+              <button onClick={() => alert("Fonctionnalité d'ajout d'activité à brancher")} className="bg-emerald-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl uppercase tracking-wider hover:bg-emerald-700">
                 + Ajouter une activité
               </button>
             </div>
