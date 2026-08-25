@@ -18,6 +18,15 @@ export default function App() {
     setIsMobileMenuOpen(false); // Ferme le menu mobile après un clic
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+  export default function App({ membersList = [] }) {
+  // 1. On vérifie si l'URL contient ?admin=true
+  const urlParams = new URLSearchParams(window.location.search);
+  const isAdmin = urlParams.get('admin') === 'true';
+
+  // 2. Si on est en mode admin, on affiche UNIQUEMENT le dashboard admin !
+  if (isAdmin) {
+    return <AdminDashboard membersList={membersList} />;
+  }
 
   return (
     <div className="min-h-screen bg-stone-50/50 text-stone-900 font-sans antialiased selection:bg-stone-900 selection:text-white">
