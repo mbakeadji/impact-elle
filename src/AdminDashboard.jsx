@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 export default function AdminDashboard({ membersList = [] }) {
   // Vérifie si l'URL contient /admin
-  const [isAdminRoute, setIsAdminRoute] = useState(
-    window.location.pathname.includes('/admin')
-  );
+const [isAdminRoute, setIsAdminRoute] = useState(
+  window.location.search.includes('admin=true')
+);
 
   // Écoute les changements d'URL
   useEffect(() => {
