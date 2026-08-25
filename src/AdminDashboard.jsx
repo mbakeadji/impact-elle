@@ -1,20 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-export default function AdminDashboard({ membersList = [] }) {
-  // Vérifie si l'URL contient /admin
-const [isAdminRoute, setIsAdminRoute] = useState(
-  window.location.search.includes('admin=true')
-);
-
-  // Écoute les changements d'URL
-  useEffect(() => {
-    const checkRoute = () => {
-      setIsAdminRoute(window.location.pathname.includes('/admin'));
-    };
-    window.addEventListener('popstate', checkRoute);
-    return () => window.removeEventListener('popstate', checkRoute);
-  }, []);
-
   // État de l'authentification
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
