@@ -18,17 +18,93 @@ export default function App() {
     setIsMobileMenuOpen(false); // Ferme le menu mobile après un clic
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-  export default function App({ membersList = [] }) {
-  // 1. On vérifie si l'URL contient ?admin=true
+ export default function App({ membersList = [] }) {
+  // 1. Vérifie si l'URL contient ?admin=true
   const urlParams = new URLSearchParams(window.location.search);
-  const isAdmin = urlParams.get('admin') === 'true';
+  const isAdminUrl = urlParams.get('admin') === 'true';
 
-  // 2. Si on est en mode admin, on affiche UNIQUEMENT le dashboard admin !
-  if (isAdmin) {
-    return <AdminDashboard membersList={membersList} />;
-  }
+  // 2. État pour la connexion admin
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState(false);
 
-  return (
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (username === 'impactelle' && password === '25082026') {
+      setIsAuthenticated(true);
+      setLoginError(false);
+    } else {
+      setLoginError(true);
+    }
+  };
+
+  // 3. Si on est sur l'URL admin
+  if (isAdminUrl) {
+    // Si pas encore connecté -> Afficher l'écran d'authentification
+    if (!isAuthenticated) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-stone-100 px-4">
+          <div className="max-w-md w-full bg-white rounded-3xl shadow-lg border border-stone-200 p-8 relative">
+            <a 
+              href="/" 
+              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-sm font-bold"
+            >
+              ✕ Quitter
+            </a>
+
+            <div className="text-center mb-8">
+              <div className="w-12 h-12 bg-emerald-800 text-white flex items-center justify-center font-black text-xl rounded-2xl mx-auto mb-3 shadow-md">
+                I
+              </div>
+              <h1 className="text-2xl font-black text-stone-900">Administration</h1>
+              <p className="text-xs text-stone-500 uppercase tracking-wider font-bold mt-1">Impact'Elle - Connexion sécurisée</p>
+            </div>
+
+            {loginError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl text-center">
+                Identifiant ou mot de passe incorrect.
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Identifiant</label>
+                <input 
+                  type="text" 
+                  value={username} 
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="impactelle"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-800 text-sm"
+                  required 
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Mot de passe</label>
+                <input 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-800 text-sm"
+                  required 
+                />
+              </div>
+              <button 
+                type="submit"
+                className="w-full bg-stone-900 text-emerald-400 font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-md hover:bg-stone-800 transition-all cursor-pointer mt-2"
+              >
+                Se connecter
+              </button>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // Si connecté -> Afficher le tableau de bord
+    return <AdminDashboard membersList={membersList} onLogout={() => setIsAuthenticated(false)} />;
+  } return (
     <div className="min-h-screen bg-stone-50/50 text-stone-900 font-sans antialiased selection:bg-stone-900 selection:text-white">
       
       {/* 1. BANDEAU SUPÉRIEUR */}
