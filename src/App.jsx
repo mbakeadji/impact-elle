@@ -276,7 +276,7 @@ export default function App() {
 
       {/* FOOTER */}
       <footer className="bg-stone-900 text-stone-400 py-12 text-center text-sm">
-        <a href="#admin" onClick={(e) => navigateTo('admin', e)} className="text-xs text-stone-500 hover:text-emerald-800">
+        <a href="?admin=true" onClick={(e) => navigateTo('admin', e)} className="text-xs text-stone-500 hover:text-emerald-800">
   Espace Admin
 </a>
         <p>&copy; 2026 Impact'Elle. Tous droits réservés.</p>
