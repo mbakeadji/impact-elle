@@ -6,28 +6,25 @@ import Gallery from './Gallery';
 import Contact from './Contact';
 import FormReg from './FormReg';
 import AdminDashboard from './AdminDashboard';
+
 export default function App() {
   const [activePage, setActivePage] = useState('home');
   const [membersList, setMembersList] = useState([]);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // État pour ouvrir/fermer le menu sur mobile
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Fonction de navigation avec remontée automatique et fermeture du menu mobile
-  const navigateTo = (page, e) => {
-    if (e) e.preventDefault();
-    setActivePage(page);
-    setIsMobileMenuOpen(false); // Ferme le menu mobile après un clic
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
- export default function App({ membersList = [] }) {
-  // 1. Vérifie si l'URL contient ?admin=true
-  const urlParams = new URLSearchParams(window.location.search);
-  const isAdminUrl = urlParams.get('admin') === 'true';
-
-  // 2. État pour la connexion admin
+  // États pour l'authentification Admin
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(false);
+
+  // Fonction de navigation globale
+  const navigateTo = (page, e) => {
+    if (e) e.preventDefault();
+    setActivePage(page);
+    setIsMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -39,75 +36,85 @@ export default function App() {
     }
   };
 
-  // 3. Si on est sur l'URL admin
-  if (isAdminUrl) {
-    // Si pas encore connecté -> Afficher l'écran d'authentification
-    if (!isAuthenticated) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-stone-100 px-4">
-          <div className="max-w-md w-full bg-white rounded-3xl shadow-lg border border-stone-200 p-8 relative">
-            <a 
-              href="/" 
-              className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-sm font-bold"
-            >
-              ✕ Quitter
-            </a>
+  // 1. Si on est sur l'onglet 'admin' et pas encore connecté -> Afficher l'écran de connexion
+  if (activePage === 'admin' && !isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-100 px-4">
+        <div className="max-w-md w-full bg-white rounded-3xl shadow-lg border border-stone-200 p-8 relative">
+          <button 
+            onClick={(e) => navigateTo('home', e)} 
+            className="absolute top-4 right-4 text-stone-400 hover:text-stone-700 text-sm font-bold cursor-pointer"
+          >
+            ✕ Quitter
+          </button>
 
-            <div className="text-center mb-8">
-              <div className="w-12 h-12 bg-emerald-800 text-white flex items-center justify-center font-black text-xl rounded-2xl mx-auto mb-3 shadow-md">
-                I
-              </div>
-              <h1 className="text-2xl font-black text-stone-900">Administration</h1>
-              <p className="text-xs text-stone-500 uppercase tracking-wider font-bold mt-1">Impact'Elle - Connexion sécurisée</p>
+          <div className="text-center mb-8">
+            <div className="w-12 h-12 bg-emerald-800 text-white flex items-center justify-center font-black text-xl rounded-2xl mx-auto mb-3 shadow-md">
+              I
             </div>
-
-            {loginError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl text-center">
-                Identifiant ou mot de passe incorrect.
-              </div>
-            )}
-
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Identifiant</label>
-                <input 
-                  type="text" 
-                  value={username} 
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="impactelle"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-800 text-sm"
-                  required 
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Mot de passe</label>
-                <input 
-                  type="password" 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-800 text-sm"
-                  required 
-                />
-              </div>
-              <button 
-                type="submit"
-                className="w-full bg-stone-900 text-emerald-400 font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-md hover:bg-stone-800 transition-all cursor-pointer mt-2"
-              >
-                Se connecter
-              </button>
-            </form>
+            <h1 className="text-2xl font-black text-stone-900">Administration</h1>
+            <p className="text-xs text-stone-500 uppercase tracking-wider font-bold mt-1">Impact'Elle - Connexion sécurisée</p>
           </div>
-        </div>
-      );
-    }
 
-    // Si connecté -> Afficher le tableau de bord
-    return <AdminDashboard membersList={membersList} onLogout={() => setIsAuthenticated(false)} />;
-  } return (
+          {loginError && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-semibold rounded-xl text-center">
+              Identifiant ou mot de passe incorrect.
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Identifiant</label>
+              <input 
+                type="text" 
+                value={username} 
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="impactelle"
+                className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-800 text-sm"
+                required 
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Mot de passe</label>
+              <input 
+                type="password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••••••"
+                className="w-full px-4 py-3 rounded-xl border border-stone-200 focus:outline-none focus:ring-2 focus:ring-emerald-800 text-sm"
+                required 
+              />
+            </div>
+            <button 
+              type="submit"
+              className="w-full bg-stone-900 text-emerald-400 font-bold text-xs uppercase tracking-wider py-3.5 rounded-xl shadow-md hover:bg-stone-800 transition-all cursor-pointer mt-2"
+            >
+              Se connecter
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Si on est sur l'onglet 'admin' et connecté -> Afficher le Dashboard complet
+  if (activePage === 'admin' && isAuthenticated) {
+    return (
+      <AdminDashboard 
+        membersList={membersList} 
+        onLogout={() => {
+          setIsAuthenticated(false);
+          navigateTo('home');
+        }} 
+      />
+    );
+  }
+
+  // 3. Affichage normal du site (Accueil, À propos, Activités, etc.)
+  return (
     <div className="min-h-screen bg-stone-50/50 text-stone-900 font-sans antialiased selection:bg-stone-900 selection:text-white">
       
-      {/* 1. BANDEAU SUPÉRIEUR */}
+      {/* BANDEAU SUPÉRIEUR */}
       <aside aria-label="Annonce d'actualité" className="bg-gradient-to-r from-stone-900 via-emerald-900 to-stone-900 text-stone-100 text-xs py-2.5 px-4 shadow-sm">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           <div className="flex items-center space-x-2">
@@ -124,7 +131,7 @@ export default function App() {
         </div>
       </aside>
 
-      {/* 2. NAVIGATION MODERNE */}
+      {/* NAVIGATION MODERNE */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-stone-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           
@@ -143,7 +150,7 @@ export default function App() {
             </div>
           </a>
 
-          {/* Menu Nav Desktop (caché sur mobile) */}
+          {/* Menu Nav Desktop */}
           <nav className="hidden md:flex items-center space-x-8 font-semibold text-sm text-stone-600">
             <a 
               href="#home" 
@@ -192,7 +199,6 @@ export default function App() {
               Rejoindre impact'Elle
             </a>
 
-            {/* Bouton Menu Burger (visible uniquement sur mobile) */}
             <button 
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden text-stone-700 hover:text-emerald-800 focus:outline-none p-2"
@@ -271,14 +277,18 @@ export default function App() {
         {activePage === 'formreg' && (
           <FormReg membersList={membersList} setMembersList={setMembersList} />
         )}
-        {activePage === 'admin' && <AdminDashboard membersList={membersList} />}
       </main>
 
       {/* FOOTER */}
-      <footer className="bg-stone-900 text-stone-400 py-12 text-center text-sm">
-        <a href="?admin=true" onClick={(e) => navigateTo('admin', e)} className="text-xs text-stone-500 hover:text-emerald-800">
-  Espace Admin
-</a>
+      <footer className="bg-stone-900 text-stone-400 py-12 text-center text-sm space-y-2">
+        <div>
+          <button 
+            onClick={(e) => navigateTo('admin', e)} 
+            className="text-xs text-stone-400 hover:text-emerald-400 transition-colors cursor-pointer bg-transparent border-none underline"
+          >
+            Espace Admin
+          </button>
+        </div>
         <p>&copy; 2026 Impact'Elle. Tous droits réservés.</p>
       </footer>
 
