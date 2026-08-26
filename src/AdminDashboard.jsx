@@ -1,91 +1,55 @@
 import React, { useState } from 'react';
 
-export default function AdminDashboard({ membersList = [], onLogout }) {
+export default function AdminDashboard({ membersList = [], activitiesList = [], setActivitiesList, onLogout }) {
   const [activeTab, setActiveTab] = useState('overview');
 
-  // État des activités avec CRUD complet et support d'image
-  const [activities, setActivities] = useState([
-    { id: 1, title: 'Atelier Leadership Féminin', date: '2026-09-10', category: 'Formation', status: 'Publié', image: 'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&q=80&w=200' },
-    { id: 2, title: 'Formation Transformation Agroalimentaire', date: '2026-09-18', category: 'Agro', status: 'Brouillon', image: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=200' }
-  ]);
+  // États locaux pour le formulaire d'ajout d'une nouvelle activité
+  const [newTitle, setNewTitle] = useState('');
+  const [newDate, setNewDate] = useState('');
+  const [newCategory, setNewCategory] = useState('Formation');
+  const [newDescription, setNewDescription] = useState('');
+  const [newImage, setNewImage] = useState('');
 
-  // États du formulaire d'activité
-  const [title, setTitle] = useState('');
-  const [date, setDate] = useState('');
-  const [category, setCategory] = useState('Formation & Gestion');
-  const [description, setDescription] = useState('');
-  const [image, setImage] = useState('');
-  const [status, setStatus] = useState('Publié');
-  const [editingId, setEditingId] = useState(null);
-
-  // Gestion de l'upload d'image locale
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  // Soumission du formulaire Activité (Ajout ou Modification)
-  const handleSubmitActivity = (e) => {
-    e.preventDefault();
-    if (!title || !date) return;
-
-    if (editingId !== null) {
-      setActivities(activities.map(act => 
-        act.id === editingId 
-          ? { ...act, title, date, category, description, image: image || act.image, status } 
-          : act
-      ));
-      setEditingId(null);
-    } else {
-      const newActivity = {
-        id: Date.now(),
-        title,
-        date,
-        category,
-        description: description || 'Suivi et impact communautaire sur le terrain.',
-        image: image || 'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&q=80&w=200',
-        status
-      };
-      setActivities([newActivity, ...activities]);
-    }
-
-    setTitle('');
-    setDate('');
-    setDescription('');
-    setImage('');
-    setStatus('Publié');
-  };
-
-  const handleEdit = (act) => {
-    setEditingId(act.id);
-    setTitle(act.title);
-    setDate(act.date);
-    setCategory(act.category || 'Formation');
-    setDescription(act.description || '');
-    setImage(act.image || '');
-    setStatus(act.status || 'Publié');
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Voulez-vous vraiment supprimer cette activité ?")) {
-      setActivities(activities.filter(act => act.id !== id));
-    }
-  };
-
-  // Données mockées pour Messages et Inscriptions Formations
+  // États fictifs pour les contacts et inscriptions (tu pourras les passer en props plus tard si besoin)
   const [contacts] = useState([
-    { id: 1, name: 'Aissatou Diallo', email: 'aissatou@gmail.com', message: 'Je souhaite en savoir plus sur les conditions d’adhésion et participer à vos programmes.', date: '25/08/2026' }
+    { id: 1, name: 'Aissatou Diallo', email: 'aissatou@gmail.com', message: 'Je souhaite en savoir plus sur les conditions d’adhésion.', date: '25/08/2026' }
   ]);
 
   const [formRegs] = useState([
     { id: 1, fullName: 'Aminata Ndiaye', phone: '+221 77 123 45 67', activity: 'Agro-business', status: 'Confirmé' }
   ]);
+
+  // Fonction pour ajouter une activité
+  const handleAddActivity = (e) => {
+    e.preventDefault();
+    if (!newTitle || !newDate) return;
+
+    const newActivityObj = {
+      id: Date.now(),
+      title: newTitle,
+      date: newDate,
+      category: newCategory,
+      status: 'Publié',
+      description: newDescription || 'Aucune description fournie.',
+      image: newImage || 'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&q=80&w=400'
+    };
+
+    setActivitiesList([newActivityObj, ...activitiesList]);
+
+    // Réinitialiser le formulaire
+    setNewTitle('');
+    setNewDate('');
+    setNewDescription('');
+    setNewImage('');
+    alert('Activité ajoutée et publiée avec succès !');
+  };
+
+  // Fonction pour supprimer une activité
+  const handleDeleteActivity = (id) => {
+    if (confirm('Voulez-vous vraiment supprimer cette activité ?')) {
+      setActivitiesList(activitiesList.filter(act => act.id !== id));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-stone-100 flex flex-col md:flex-row">
@@ -113,7 +77,7 @@ export default function AdminDashboard({ membersList = [], onLogout }) {
               onClick={() => setActiveTab('activities')} 
               className={`w-full text-left px-4 py-2.5 rounded-xl transition-colors cursor-pointer ${activeTab === 'activities' ? 'bg-emerald-800 text-white font-bold shadow-sm' : 'hover:bg-stone-800'}`}
             >
-              📅 Activités ({activities.length})
+              📅 Activités ({activitiesList.length})
             </button>
             <button 
               onClick={() => setActiveTab('members')} 
@@ -158,7 +122,7 @@ export default function AdminDashboard({ membersList = [], onLogout }) {
               </div>
               <div className="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
                 <p className="text-xs text-stone-500 font-bold uppercase tracking-wider">Activités</p>
-                <p className="text-3xl font-black text-stone-900 mt-2">{activities.length}</p>
+                <p className="text-3xl font-black text-stone-900 mt-2">{activitiesList.length}</p>
               </div>
               <div className="bg-white p-5 rounded-2xl shadow-sm border border-stone-200">
                 <p className="text-xs text-stone-500 font-bold uppercase tracking-wider">Inscriptions Form.</p>
@@ -172,158 +136,6 @@ export default function AdminDashboard({ membersList = [], onLogout }) {
           </div>
         )}
 
-        {/* GESTION DES ACTIVITÉS (CRUD TABLE + IMAGE) */}
-        {activeTab === 'activities' && (
-          <div className="space-y-8">
-            <h1 className="text-2xl font-black text-stone-900">Gestion des Activités & Publications</h1>
-
-            {/* Formulaire Ajout / Modification */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
-              <h2 className="text-base font-bold text-stone-900 mb-4">
-                {editingId !== null ? '✏️ Modifier l\'activité' : '➕ Ajouter une nouvelle activité'}
-              </h2>
-              <form onSubmit={handleSubmitActivity} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Titre de l'activité</label>
-                  <input 
-                    type="text" 
-                    value={title} 
-                    onChange={(e) => setTitle(e.target.value)} 
-                    placeholder="Ex: Atelier leadership féminin" 
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-emerald-800 focus:outline-none"
-                    required 
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Date</label>
-                  <input 
-                    type="date" 
-                    value={date} 
-                    onChange={(e) => setDate(e.target.value)} 
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-emerald-800 focus:outline-none"
-                    required 
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Catégorie</label>
-                  <input 
-                    type="text" 
-                    value={category} 
-                    onChange={(e) => setCategory(e.target.value)} 
-                    placeholder="Ex: Formation" 
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-emerald-800 focus:outline-none" 
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Statut</label>
-                  <select 
-                    value={status} 
-                    onChange={(e) => setStatus(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-emerald-800 focus:outline-none"
-                  >
-                    <option value="Publié">Publié</option>
-                    <option value="Brouillon">Brouillon</option>
-                  </select>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Image de l'activité</label>
-                  <div className="flex items-center gap-4">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="w-full px-4 py-2 rounded-xl border border-stone-200 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer" 
-                    />
-                    {image && (
-                      <img src={image} alt="Aperçu" className="w-12 h-12 object-cover rounded-lg border border-stone-200 shadow-sm flex-shrink-0" />
-                    )}
-                  </div>
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Description</label>
-                  <textarea 
-                    value={description} 
-                    onChange={(e) => setDescription(e.target.value)} 
-                    placeholder="Détails de l'activité..." 
-                    rows="3"
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:ring-2 focus:ring-emerald-800 focus:outline-none" 
-                  />
-                </div>
-
-                <div className="sm:col-span-2 flex gap-3 pt-2">
-                  <button 
-                    type="submit" 
-                    className="bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-xl shadow-md hover:bg-emerald-900 transition-all cursor-pointer"
-                  >
-                    {editingId !== null ? 'Enregistrer les modifications' : 'Publier l\'activité'}
-                  </button>
-                  {editingId !== null && (
-                    <button 
-                      type="button" 
-                      onClick={() => { setEditingId(null); setTitle(''); setDate(''); setDescription(''); setImage(''); }}
-                      className="bg-stone-200 text-stone-700 font-bold text-xs uppercase tracking-wider px-4 py-3 rounded-xl hover:bg-stone-300 transition-all cursor-pointer"
-                    >
-                      Annuler
-                    </button>
-                  )}
-                </div>
-              </form>
-            </div>
-
-            {/* Tableau CRUD Activités */}
-            <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6">
-              <h2 className="text-base font-bold text-stone-900 mb-4">Liste des activités ({activities.length})</h2>
-              {activities.length === 0 ? (
-                <p className="text-stone-500 text-sm py-8 text-center">Aucune activité enregistrée.</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse text-sm">
-                    <thead>
-                      <tr className="border-b border-stone-200 text-xs font-bold uppercase tracking-wider text-stone-500 bg-stone-50/50">
-                        <th className="py-3 px-4">Image</th>
-                        <th className="py-3 px-4">Titre</th>
-                        <th className="py-3 px-4">Catégorie</th>
-                        <th className="py-3 px-4">Date</th>
-                        <th className="py-3 px-4">Statut</th>
-                        <th className="py-3 px-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {activities.map(act => (
-                        <tr key={act.id} className="border-b border-stone-100 hover:bg-stone-50">
-                          <td className="py-3 px-4">
-                            <img src={act.image} alt="" className="w-12 h-12 object-cover rounded-xl shadow-sm border border-stone-100" />
-                          </td>
-                          <td className="py-3 px-4 font-bold text-stone-800">{act.title}</td>
-                          <td className="py-3 px-4 text-stone-600 text-xs">
-                            <span className="px-2.5 py-1 bg-stone-100 rounded-md text-stone-700 font-medium">{act.category || 'Général'}</span>
-                          </td>
-                          <td className="py-3 px-4 text-stone-600 text-xs">{act.date}</td>
-                          <td className="py-3 px-4">
-                            <span className={`px-2.5 py-1 text-xs font-bold rounded-full ${act.status === 'Publié' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
-                              {act.status}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-right space-x-2">
-                            <button onClick={() => handleEdit(act)} className="bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer">Modifier</button>
-                            <button onClick={() => handleDelete(act.id)} className="bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer">Supprimer</button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* GESTION DES ADHÉSIONS */}
         {activeTab === 'members' && (
           <div className="space-y-6">
             <h1 className="text-2xl font-black text-stone-900">Gestion des Adhésions</h1>
@@ -356,61 +168,143 @@ export default function AdminDashboard({ membersList = [], onLogout }) {
           </div>
         )}
 
-        {/* INSCRIPTIONS FORMATIONS */}
-        {activeTab === 'formreg' && (
+        {activeTab === 'activities' && (
           <div className="space-y-6">
-            <h1 className="text-2xl font-black text-stone-900">Inscriptions aux Formations</h1>
+            <h1 className="text-2xl font-black text-stone-900">Gestion des Activités</h1>
+            
+            {/* Formulaire d'ajout d'une activité */}
             <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6">
-              {formRegs.length === 0 ? (
-                <p className="text-stone-500 text-sm py-8 text-center">Aucune inscription enregistrée.</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse text-sm">
-                    <thead>
-                      <tr className="border-b border-stone-200 text-xs font-bold uppercase tracking-wider text-stone-500">
-                        <th className="py-3 px-4">Nom Complet</th>
-                        <th className="py-3 px-4">Téléphone</th>
-                        <th className="py-3 px-4">Activité / Formation</th>
-                        <th className="py-3 px-4">Statut</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {formRegs.map(reg => (
-                        <tr key={reg.id} className="border-b border-stone-100 hover:bg-stone-50">
-                          <td className="py-3 px-4 font-semibold text-stone-800">{reg.fullName}</td>
-                          <td className="py-3 px-4 text-stone-600">{reg.phone}</td>
-                          <td className="py-3 px-4 text-stone-600">{reg.activity}</td>
-                          <td className="py-3 px-4">
-                            <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">{reg.status}</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+              <h3 className="font-bold text-stone-800 text-base mb-4">Ajouter une nouvelle activité</h3>
+              <form onSubmit={handleAddActivity} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Titre de l'activité</label>
+                    <input 
+                      type="text" 
+                      value={newTitle} 
+                      onChange={(e) => setNewTitle(e.target.value)} 
+                      placeholder="Ex: Conférence sur l'Agro-business"
+                      className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                      required 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Date</label>
+                    <input 
+                      type="date" 
+                      value={newDate} 
+                      onChange={(e) => setNewDate(e.target.value)} 
+                      className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                      required 
+                    />
+                  </div>
                 </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Catégorie</label>
+                    <input 
+                      type="text" 
+                      value={newCategory} 
+                      onChange={(e) => setNewCategory(e.target.value)} 
+                      placeholder="Ex: Formation, Atelier, Conférence"
+                      className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Lien de l'image (URL)</label>
+                    <input 
+                      type="text" 
+                      value={newImage} 
+                      onChange={(e) => setNewImage(e.target.value)} 
+                      placeholder="https://images.unsplash.com/..."
+                      className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Description</label>
+                  <textarea 
+                    value={newDescription} 
+                    onChange={(e) => setNewDescription(e.target.value)} 
+                    placeholder="Détails de l'activité..."
+                    rows="3"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                  ></textarea>
+                </div>
+
+                <button 
+                  type="submit"
+                  className="bg-stone-900 text-emerald-400 font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-xl shadow-md hover:bg-stone-800 transition-all cursor-pointer"
+                >
+                  Publier l'activité
+                </button>
+              </form>
+            </div>
+
+            {/* Liste des activités existantes */}
+            <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 space-y-4">
+              <h3 className="font-bold text-stone-800 text-base mb-2">Activités enregistrées</h3>
+              {activitiesList.length === 0 ? (
+                <p className="text-stone-500 text-sm py-4">Aucune activité enregistrée.</p>
+              ) : (
+                activitiesList.map(act => (
+                  <div key={act.id} className="flex justify-between items-center p-4 rounded-xl border border-stone-100 bg-stone-50/50">
+                    <div>
+                      <h4 className="font-bold text-stone-800">{act.title}</h4>
+                      <p className="text-xs text-stone-500 mt-0.5">Date : {act.date} | Catégorie : {act.category || 'Général'}</p>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">
+                        {act.status}
+                      </span>
+                      <button 
+                        onClick={() => handleDeleteActivity(act.id)}
+                        className="text-red-500 hover:text-red-700 text-xs font-bold px-2.5 py-1 bg-red-50 rounded-lg cursor-pointer"
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           </div>
         )}
 
-        {/* MESSAGES DE CONTACT LISIBLES */}
+        {activeTab === 'formreg' && (
+          <div className="space-y-6">
+            <h1 className="text-2xl font-black text-stone-900">Inscriptions aux Formations</h1>
+            <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 space-y-4">
+              {formRegs.map(reg => (
+                <div key={reg.id} className="flex justify-between items-center p-4 rounded-xl border border-stone-100 bg-stone-50/50">
+                  <div>
+                    <h3 className="font-bold text-stone-800">{reg.fullName}</h3>
+                    <p className="text-xs text-stone-500 mt-0.5">Tél : {reg.phone} | Activité : {reg.activity}</p>
+                  </div>
+                  <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold rounded-full">
+                    {reg.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {activeTab === 'contacts' && (
           <div className="space-y-6">
             <h1 className="text-2xl font-black text-stone-900">Messages de Contact</h1>
             <div className="bg-white rounded-2xl shadow-sm border border-stone-200 p-6 space-y-4">
-              {contacts.length === 0 ? (
-                <p className="text-stone-500 text-sm py-8 text-center">Aucun message reçu.</p>
-              ) : (
-                contacts.map(c => (
-                  <div key={c.id} className="p-5 rounded-2xl border border-stone-200 bg-stone-50/50 space-y-2 shadow-sm">
-                    <div className="flex justify-between items-center border-b border-stone-200 pb-2">
-                      <h3 className="font-bold text-stone-900 text-base">{c.name} <span className="text-xs font-normal text-emerald-700">({c.email})</span></h3>
-                      <span className="text-xs text-stone-500 bg-white px-2.5 py-1 rounded-lg border border-stone-200 shadow-xs">{c.date}</span>
-                    </div>
-                    <p className="text-sm text-stone-700 leading-relaxed pt-1">{c.message}</p>
+              {contacts.map(c => (
+                <div key={c.id} className="p-4 rounded-xl border border-stone-100 bg-stone-50/50 space-y-1">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-bold text-stone-800">{c.name} <span className="text-xs font-normal text-stone-500">({c.email})</span></h3>
+                    <span className="text-xs text-stone-400">{c.date}</span>
                   </div>
-                ))
-              )}
+                  <p className="text-sm text-stone-600 pt-1">{c.message}</p>
+                </div>
+              ))}
             </div>
           </div>
         )}

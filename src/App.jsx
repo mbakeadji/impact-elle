@@ -12,6 +12,19 @@ export default function App() {
   const [membersList, setMembersList] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // --- ÉTAT GLOBAL DES ACTIVITÉS (Partagé entre Admin et Site Public) ---
+  const [activitiesList, setActivitiesList] = useState([
+    { 
+      id: 1, 
+      title: 'Atelier Leadership Féminin', 
+      date: '2026-09-10', 
+      category: 'Formation', 
+      status: 'Publié', 
+      description: 'Atelier pratique sur le renforcement des capacités managériales.',
+      image: 'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&q=80&w=400' 
+    }
+  ]);
+
   // États pour l'authentification Admin
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState('');
@@ -97,11 +110,13 @@ export default function App() {
     );
   }
 
-  // 2. Si on est sur l'onglet 'admin' et connecté -> Afficher le Dashboard complet
+  // 2. Si on est sur l'onglet 'admin' et connecté -> Afficher le Dashboard complet en lui passant les données
   if (activePage === 'admin' && isAuthenticated) {
     return (
       <AdminDashboard 
-        membersList={membersList} 
+        membersList={membersList}
+        activitiesList={activitiesList}
+        setActivitiesList={setActivitiesList}
         onLogout={() => {
           setIsAuthenticated(false);
           navigateTo('home');
@@ -267,11 +282,11 @@ export default function App() {
         )}
       </header>
 
-      {/* CONTENU PRINCIPAL */}
+      {/* CONTENU PRINCIPAL : On transmet activitiesList à la page des activités */}
       <main>
         {activePage === 'home' && <Hero navigateTo={navigateTo} />}
         {activePage === 'about' && <About />}
-        {activePage === 'activities' && <Activities />}
+        {activePage === 'activities' && <Activities activitiesList={activitiesList} />}
         {activePage === 'gallery' && <Gallery />}
         {activePage === 'contact' && <Contact />}
         {activePage === 'formreg' && (
