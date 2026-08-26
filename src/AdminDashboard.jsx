@@ -50,7 +50,18 @@ export default function AdminDashboard({ membersList = [], activitiesList = [], 
       setActivitiesList(activitiesList.filter(act => act.id !== id));
     }
   };
-
+// Exemple de fonction pour gérer l'upload de l'image dans ton formulaire admin
+const handleImageChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      // Met à jour ton state d'activité avec l'image convertie en base64
+      setNewActivity({ ...newActivity, image: reader.result });
+    };
+    reader.readAsDataURL(file);
+  }
+};
   return (
     <div className="min-h-screen bg-stone-100 flex flex-col md:flex-row">
       {/* Sidebar de navigation Admin */}
@@ -212,17 +223,34 @@ export default function AdminDashboard({ membersList = [], activitiesList = [], 
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Lien de l'image (URL)</label>
-                    <input 
-                      type="text" 
-                      value={newImage} 
-                      onChange={(e) => setNewImage(e.target.value)} 
-                      placeholder="https://images.unsplash.com/..."
-                      className="w-full px-4 py-2.5 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-800"
-                    />
-                  </div>
-                </div>
-
+  <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-2">
+    Image de l'activité
+  </label>
+  <div className="flex items-center gap-4">
+    <input 
+      type="file" 
+      accept="image/*"
+      onChange={handleImageChange}
+      className="w-full text-sm text-stone-500
+        file:mr-4 file:py-2.5 file:px-4
+        file:rounded-xl file:border-0
+        file:text-xs file:font-bold
+        file:bg-emerald-50 file:text-emerald-800
+        hover:file:bg-emerald-100 cursor-pointer border border-stone-200 rounded-xl p-1 bg-white shadow-sm"
+    />
+  </div>
+  
+  {/* Aperçu miniature de l'image sélectionnée */}
+  {newActivity.image && (
+    <div className="mt-3 relative w-24 h-24 rounded-xl overflow-hidden border border-stone-200 bg-stone-900">
+      <img 
+        src={newActivity.image} 
+        alt="Aperçu" 
+        className="w-full h-full object-cover"
+      />
+    </div>
+  )}
+</div>
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-stone-600 mb-1">Description</label>
                   <textarea 
